@@ -25,8 +25,8 @@
         <module name="dsr_project" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="dsr_project" target="1.6" />
+    <bytecodeTargetLevel target="1.8">
+      <module name="dsr_project" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
