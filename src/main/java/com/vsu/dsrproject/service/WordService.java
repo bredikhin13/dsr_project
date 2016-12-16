@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import javax.transaction.TransactionScoped;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
@@ -15,6 +17,7 @@ import static java.util.stream.StreamSupport.stream;
 
 @Service
 public class WordService {
+
     @Autowired
     private WordRepository wordRepository;
 
@@ -23,4 +26,23 @@ public class WordService {
         return stream(wordRepository.findAll().spliterator(), false)
                 .collect(toList());
     }
+
+    @Transactional
+    public void saveAll(Set<Word> words){
+       wordRepository.save(words);
+    }
+
+    @Transactional
+    public Word update(Word word){
+        Word savedWord = wordRepository.findOne(word.getId());
+        savedWord.setCallCount(word.getCallCount());
+        savedWord.setTrueCount(word.getTrueCount());
+        return wordRepository.save(savedWord);
+    }
+
+    @Transactional
+    public Word getOne(Long id){
+        return wordRepository.findOne(id);
+    }
+
 }

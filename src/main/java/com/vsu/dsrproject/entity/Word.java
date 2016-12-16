@@ -1,23 +1,33 @@
 package com.vsu.dsrproject.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
+
 public class Word {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String word;
+
+
     private String translate;
     private Integer callCount;
     private Integer trueCount;
 
-    @ManyToOne
-    @JoinColumn(name = "languageId")
+    //@ManyToOne
+    //@JoinColumn(name = "languageId")
+    private String language;
+
+
     @JsonIgnore
-    private Language language;
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "words")
+    private Set<Training> trainings = new HashSet<Training>();
+
 
     @Override
     public boolean equals(Object o) {
@@ -62,7 +72,6 @@ public class Word {
     }
 
 
-
     public Long getId() {
         return id;
     }
@@ -103,12 +112,22 @@ public class Word {
         this.trueCount = trueCount;
     }
 
-    public Language getLanguage() {
+    public String getLanguage() {
 
         return language;
     }
 
-    public void setLanguage(Language language) {
+    public void setLanguage(String language) {
         this.language = language;
     }
+
+    public Set<Training> getTrainings() {
+        return trainings;
+    }
+
+    public void setTrainings(Set<Training> trainings) {
+        this.trainings = trainings;
+    }
+
+
 }

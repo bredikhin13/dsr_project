@@ -1,5 +1,9 @@
 package com.vsu.dsrproject.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -20,8 +24,9 @@ public class Language {
     private String name;
     private String code;
 
-    @OneToMany(mappedBy = "language")
-    private List<Word> words = new ArrayList<Word>();
+//    @OneToMany(mappedBy = "language")
+//    @JsonIgnore
+//    private List<Word> words = new ArrayList<Word>();
 
 
 

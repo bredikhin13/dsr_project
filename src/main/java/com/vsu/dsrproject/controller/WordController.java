@@ -20,7 +20,6 @@ public class WordController {
 
     @RequestMapping(value = "", method = GET)
     public String list(ModelMap modelMap) {
-
         return "word/show";
     }
 }

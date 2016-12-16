@@ -1,68 +1,135 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>jSchool 2016</title>
+<#include "/part/header.ftl">
+<style>
+    .font-red{
+        color: red;
+        font-style: italic;
+    }
+    .font-green{
+        color: green;
+        font-style: italic;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $(".btn-save").hide();
+        $("#invalidField").hide();
+        $("#success").hide();
+        $("#navWord").addClass("active");
+        $('.myclass').on('click', 'button', function () {
+            var state = $(this).hasClass('active');
+            $(this).parent().remove();
+        });
+        $("#addBtn").click(function () {
+            $('.myclass').prepend(
+                    "<form class='form-inline' role='form'>" +
+                    "<div class='form-group'>" +
+                    "<input type='text' class='form-control fld' name='word'>" +
+                    "<input type='text' class='form-control fld' name='translate'>" +
+                    "<button type='button' class='btn btn-default' style='outline: none;'  onfocus='this.blur()' data-toggle='button'><span class='glyphicon glyphicon-remove'></button>" +
+                    "</div>" +
+                    "</form>"
+            );
+            $(".btn-save").show();
+        });
+    });
 
-    <!-- Bootstrap -->
-    <link href="/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script type="text/javascript" src="/assets/jquery/jquery-3.1.1.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script type="text/javascript" src="/assets/bootstrap/js/bootstrap.min.js"></script>
+    function checkFields() {
+        var flag = true;
+        $(".fld").each(function () {
+            if($(this).val()==""){
+                $("#success").hide();
+                $("#invalidField").show();
+                $(this).closest("div").addClass("has-warning");
+                flag = false;
+            }
+        });
+        return flag
+    }
 
-    <script>
-       $('.btn').click(function () {
-           var btn = $(this);
-           btn.style.backgroundColor = "blue";
-       })
 
-        function trans() {
-            var formData = {text: document.getElementById("in").value};
+    function collect() {
+        if(checkFields()) {
+            var frm = $('form.form-inline');
+            var data = JSON.stringify(frm.serializeArray());
             $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
                 type: 'POST',
-                url: "/word/load",
-                data: formData,
-                dataType: 'JSON',
+                url: "/word/save",
+                data: data,
                 success: function (result) {
-                    document.getElementById("group_in").style.display = "none";
-                    document.getElementById("out").value = result.text[0];
-                    result.outputText.forEach(function (item, i, outputText) {
-                        $('.myclass').append(
-                                "<form class=\"form-inline\" role=\"form\">" +
-                                "<input type=\"text\" class=\"form-control\" id=\"exampleInputEmail2\" disabled value=" + result.inputText[i] + ">" +
-                                "<input type=\"text\" class=\"form-control\" id=\"exampleInputPassword2\" value=" + item + " >" +
-                                "<button type='button' class='btn btn-danger' style='outline: none;' data-toggle='button'><span class='glyphicon glyphicon-remove'></button>" +
-                                "</form>"
-                        );
-                    })
+                    $("#invalidField").hide();
+                    $("#success").show();
+                    $("#in").val("");
+                    $(".myclass").empty();
+                    $('.btn-save').hide();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     alert(jqXHR.status + ' ' + jqXHR.responseText);
                 }
             });
         }
+    }
 
-    </script>
-</head>
-<body>
-<div class="container">
-    <div class="form-group" id="group_in">
-        <label for="usr">Word</label>
-        <input type="text" class="form-control" id="in">
-    </div>
-    <div class="form-group">
-        <label>Translate</label>
-        <input type="text" class="form-control" id="out">
-    </div>
-    <div class="form-group">
-        <button type="button" class="btn btn-default" onclick="trans()">Default</button>
-    </div>
-    <div class="myclass">
+    function trans() {
+        var str = $.trim($("#in").val().toLowerCase());
+        var formData = {text: str};
+        $("#invalidField").hide();
+        $("#success").hide();
+        $(".myclass").empty();
+        $.ajax({
+            type: 'POST',
+            url: "/word/load",
+            data: formData,
+            dataType: 'JSON',
+            success: function (result) {
+                result.outputText.forEach(function (item, i, outputText) {
+                    $('.myclass').append(
+                            "<form class='form-inline' role='form'>" +
+                            "<div class='form-group'>" +
+                            "<input type='text' class='form-control fld' name='word'  value=" + result.inputText[i] + ">" +
+                            "<input type='text' class='form-control fld' name='translate' value=" + item + " >" +
+                            "<button type='button' class='btn btn-default' style='outline: none;'  onfocus='this.blur()' data-toggle='button'><span class='glyphicon glyphicon-remove'></button>" +
+                            "</div>" +
+                            "</form>"
+                    );
+                });
+                $(".btn-save").show();
+            }
 
+        });
+    }
+
+</script>
+
+<div class="form-group col-sm-7" id="group_in">
+    <p>Введите слова для перевода с английского языка на русский в текстовое поле. Максимум 1000 символов.</p>
+    <p>Для добавления отдельной пары слов нажмите на +.</p>
+    <label for="usr">Текст</label>
+    <textarea class="form-control" rows="5" id="in" maxlength="1000"></textarea>
+    <div id="invalidField">
+        <p class="font-red">Все активные поля должны быть заполнены!</p>
+    </div>
+    <div id="success">
+        <p class="font-green">Слова сохранены в базу</p>
     </div>
 </div>
-</body>
-</html>
+<div class="form-group btn-toolbar col-sm-7" role="toolbar">
+    <div class="btn-group">
+        <button type="button" class="btn btn-primary" onclick="trans()">Перевести</button>
+    </div>
+    <div class="btn-group">
+        <button type="button" class="btn btn-primary" id="addBtn""><span class="glyphicon glyphicon-plus"></span></button>
+    </div>
+</div>
+<div class="form-group col-sm-7 myclass">
+
+</div>
+
+<div class="form-group col-sm-7 btn-save">
+
+    <button type="button" class="btn btn-primary" onclick="collect()">Сохранить</button>
+</div>
+<#include "/part/footer.ftl">
