@@ -4,7 +4,6 @@ import com.vsu.dsrproject.component.PairWords;
 import com.vsu.dsrproject.component.YandexResponse;
 import com.vsu.dsrproject.component.YandexTranslate;
 import com.vsu.dsrproject.entity.Word;
-import com.vsu.dsrproject.exception.TranslateException;
 import com.vsu.dsrproject.service.TextParser;
 import com.vsu.dsrproject.service.WordService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +26,8 @@ public class WordRestController {
 
     @RequestMapping(value = "/load", method = RequestMethod.POST, params = "text")
     @ResponseBody
-    public YandexResponse translate(String text) throws TranslateException  {
-        try {
-            YandexResponse response = yandexTranslate.getRsp(text);
-            return response;
-        } catch (Exception e){
-            throw new TranslateException(e.getMessage());
-        }
+    public YandexResponse translate(String text) {
+        return yandexTranslate.getRsp(text);
     }
 
     @RequestMapping(value = "/save", method = RequestMethod.POST)

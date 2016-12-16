@@ -1,7 +1,6 @@
 package com.vsu.dsrproject.component;
 
 
-import com.vsu.dsrproject.exception.TranslateException;
 import com.vsu.dsrproject.service.TextParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
